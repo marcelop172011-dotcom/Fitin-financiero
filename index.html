@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FIT-IN — Gestión Financiera</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --fitin-pink:#E8176A;
+  --fitin-pink-light:#F9E0EC;
+  --fitin-pink-mid:#F2648A;
+  --fitin-dark:#1A0A12;
+  --fitin-gray:#F7F2F5;
+  --fitin-text:#2D1220;
+  --fitin-muted:#9A7585;
+  --fitin-border:#F0D6E4;
+  --fitin-white:#FFFFFF;
+}
+body{font-family:'Poppins',sans-serif;background:#F7F2F5;color:#2D1220;min-height:100vh;}
+.app{max-width:900px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 40px rgba(232,23,106,0.08);}
+
+/* HEADER */
+.header{background:#1A0A12;padding:16px 24px;display:flex;align-items:center;gap:16px;}
+.logo-wrap{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:48px;height:48px;flex-shrink:0;}
+.logo-text{display:flex;flex-direction:column;}
+.logo-name{font-family:'Montserrat',sans-serif;font-weight:800;font-size:22px;color:#E8176A;letter-spacing:2px;}
+.logo-sub{font-family:'Montserrat',sans-serif;font-weight:500;font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:3px;text-transform:uppercase;margin-top:-2px;}
+.header-right{margin-left:auto;font-family:'Montserrat',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;}
+
+/* TABS */
+.tabs{display:flex;background:#1A0A12;padding:0 24px;border-bottom:2px solid rgba(232,23,106,0.2);}
+.tab{padding:12px 20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;color:rgba(255,255,255,0.35);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
+.tab:hover{color:#F2648A;}
+.tab.active{color:#E8176A;border-bottom-color:#E8176A;}
+
+/* PANELS */
+.panel{display:none;padding:20px 24px;}
+.panel.active{display:block;}
+
+/* MONTH BAR */
+.month-bar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;padding:12px 16px;background:#F7F2F5;border-radius:10px;border:1px solid #F0D6E4;}
+.month-bar label{font-size:12px;font-weight:600;color:#9A7585;text-transform:uppercase;letter-spacing:0.5px;}
+.month-bar select{font-family:'Poppins',sans-serif;font-size:13px;padding:6px 10px;border:1.5px solid #F0D6E4;border-radius:8px;background:#fff;color:#2D1220;outline:none;}
+.month-bar select:focus{border-color:#E8176A;}
+.view-toggle{display:flex;border:1.5px solid #E8176A;border-radius:8px;overflow:hidden;margin-left:auto;}
+.view-toggle button{padding:5px 14px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.5px;background:#fff;border:none;cursor:pointer;color:#E8176A;transition:all 0.15s;}
+.view-toggle button.active{background:#E8176A;color:#fff;}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.mc{background:#fff;border:1.5px solid #F0D6E4;border-radius:12px;padding:14px 16px;position:relative;overflow:hidden;}
+.mc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:#E8176A;}
+.mc .lbl{font-size:11px;font-weight:600;color:#9A7585;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.mc .val{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;color:#2D1220;}
+.mc .sub{font-size:11px;color:#9A7585;margin-top:3px;}
+
+/* SECTION TITLE */
+.sec-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#E8176A;margin:16px 0 10px;}
+
+/* FORM */
+.entry-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;}
+.entry-row input{font-family:'Poppins',sans-serif;font-size:13px;padding:8px 12px;border:1.5px solid #F0D6E4;border-radius:8px;background:#fff;color:#2D1220;outline:none;transition:border-color 0.2s;}
+.entry-row input:focus{border-color:#E8176A;}
+.btn-add{padding:8px 18px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:#E8176A;color:#fff;border:none;border-radius:8px;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
+.btn-add:hover{background:#c0125a;}
+.btn-del{padding:4px 10px;font-size:12px;background:transparent;border:1px solid #F0D6E4;border-radius:6px;color:#9A7585;cursor:pointer;transition:all 0.15s;}
+.btn-del:hover{background:#fce8f0;color:#E8176A;border-color:#E8176A;}
+
+/* EXPORT BTN */
+.btn-export{padding:9px 20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;background:#1A0A12;color:#fff;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background 0.15s;}
+.btn-export:hover{background:#E8176A;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#9A7585;padding:8px 10px;border-bottom:1.5px solid #F0D6E4;}
+td{padding:9px 10px;border-bottom:1px solid #F0D6E4;color:#2D1220;}
+tr:last-child td{border-bottom:none;}
+.total-row td{font-weight:600;background:#F9E0EC;border-top:1.5px solid #F2648A;}
+
+/* BADGE */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:'Montserrat',sans-serif;}
+.badge-green{background:#e6f4ea;color:#2d7a3a;}
+.badge-red{background:#fce8f0;color:#E8176A;}
+
+/* CHARTS */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:16px 0;}
+@media(max-width:560px){.charts-row{grid-template-columns:1fr;}}
+.chart-box{background:#F7F2F5;border:1.5px solid #F0D6E4;border-radius:12px;padding:14px;}
+.chart-box-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9A7585;margin-bottom:10px;text-align:center;}
+.chart-wrap{position:relative;width:100%;height:200px;}
+.pie-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:11px;color:#9A7585;justify-content:center;}
+.pie-legend span{display:flex;align-items:center;gap:4px;}
+.pie-legend i{width:9px;height:9px;border-radius:2px;display:inline-block;flex-shrink:0;}
+
+/* PE CARDS */
+.pe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;}
+.pe-card{background:#fff;border:1.5px solid #F0D6E4;border-radius:12px;padding:14px 16px;}
+.pe-card h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#9A7585;margin-bottom:6px;}
+.pe-card .big{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;}
+.pe-card .note{font-size:11px;color:#9A7585;margin-top:3px;}
+
+/* STATUS */
+.status-box{border-radius:12px;padding:14px 18px;margin-bottom:16px;border:1.5px solid;}
+.status-box.profit{background:#e6f4ea;border-color:#a3d4ac;color:#1e5c2a;}
+.status-box.loss{background:#fce8f0;border-color:#F2648A;color:#E8176A;}
+
+.divider{height:1.5px;background:#F0D6E4;margin:18px 0;}
+.empty{color:#9A7585;font-size:13px;text-align:center;padding:28px;background:#F7F2F5;border-radius:10px;}
+.costs-section{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:520px){.costs-section{grid-template-columns:1fr;}}
+.cost-block{background:#F7F2F5;border:1.5px solid #F0D6E4;border-radius:12px;padding:14px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo-wrap">
+      <svg class="logo-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40 8 C40 8 48 22 56 28 C62 32 72 32 72 32 C72 32 64 38 60 46 C56 54 58 68 58 68 C58 68 50 60 40 58 C30 60 22 68 22 68 C22 68 24 54 20 46 C16 38 8 32 8 32 C8 32 18 32 24 28 C32 22 40 8 40 8Z" fill="none" stroke="#E8176A" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M32 40 L38 46 L50 34" stroke="#E8176A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="logo-text">
+        <div class="logo-name">FIT-IN</div>
+        <div class="logo-sub">by Arianna Vallarino</div>
+      </div>
+    </div>
+    <div class="header-right">Gestión financiera</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('ventas')">Ventas</div>
+    <div class="tab" onclick="switchTab('compras')">Compras</div>
+    <div class="tab" onclick="switchTab('analisis')">Análisis financiero</div>
+  </div>
+
+  <!-- VENTAS -->
+  <div class="panel active" id="panel-ventas">
+    <div class="month-bar">
+      <label>Mes</label>
+      <select id="v-month" onchange="renderVentas()">
+        <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+        <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+        <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+      </select>
+      <select id="v-year" onchange="renderVentas()">
+        <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
+      </select>
+      <div class="view-toggle">
+        <button id="v-view-m" class="active" onclick="setVView('mensual')">Mensual</button>
+        <button id="v-view-a" onclick="setVView('acumulado')">Acumulado</button>
+      </div>
+    </div>
+    <div class="metrics" id="v-metrics"></div>
+    <div class="sec-title">Registrar venta</div>
+    <div class="entry-row">
+      <input type="text" id="v-desc" placeholder="Descripción del producto / servicio" style="flex:2;min-width:140px;"/>
+      <input type="number" id="v-qty" placeholder="Cant." min="1" step="1" style="flex:0.6;min-width:65px;"/>
+      <input type="number" id="v-price" placeholder="Precio unitario" min="0" step="0.01" style="flex:1;min-width:100px;"/>
+      <button class="btn-add" onclick="addVenta()">+ Agregar</button>
+    </div>
+    <div class="charts-row">
+      <div class="chart-box">
+        <div class="chart-box-title">Distribución de ventas</div>
+        <div class="chart-wrap"><canvas id="v-pie"></canvas></div>
+        <div class="pie-legend" id="v-pie-legend"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-box-title">Ventas por mes</div>
+        <div class="chart-wrap"><canvas id="v-bar"></canvas></div>
+      </div>
+    </div>
+    <div id="v-table"></div>
+  </div>
+
+  <!-- COMPRAS -->
+  <div class="panel" id="panel-compras">
+    <div class="month-bar">
+      <label>Mes</label>
+      <select id="c-month" onchange="renderCompras()">
+        <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+        <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+        <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+      </select>
+      <select id="c-year" onchange="renderCompras()">
+        <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
+      </select>
+      <div class="view-toggle">
+        <button id="c-view-m" class="active" onclick="setCView('mensual')">Mensual</button>
+        <button id="c-view-a" onclick="setCView('acumulado')">Acumulado</button>
+      </div>
+    </div>
+    <div class="metrics" id="c-metrics"></div>
+    <div class="costs-section">
+      <div class="cost-block">
+        <div class="sec-title">Costos variables</div>
+        <div class="entry-row">
+          <input type="text" id="cv-desc" placeholder="Descripción" style="flex:2;"/>
+          <input type="number" id="cv-val" placeholder="Monto" min="0" step="0.01" style="flex:1;min-width:90px;"/>
+          <button class="btn-add" onclick="addCosto('variable')">+</button>
+        </div>
+        <div id="cv-table"></div>
+      </div>
+      <div class="cost-block">
+        <div class="sec-title">Costos fijos</div>
+        <div class="entry-row">
+          <input type="text" id="cf-desc" placeholder="Descripción" style="flex:2;"/>
+          <input type="number" id="cf-val" placeholder="Monto" min="0" step="0.01" style="flex:1;min-width:90px;"/>
+          <button class="btn-add" onclick="addCosto('fijo')">+</button>
+        </div>
+        <div id="cf-table"></div>
+      </div>
+    </div>
+    <div class="charts-row" style="margin-top:20px;">
+      <div class="chart-box">
+        <div class="chart-box-title">Fijos vs variables</div>
+        <div class="chart-wrap"><canvas id="c-pie"></canvas></div>
+        <div class="pie-legend" id="c-pie-legend"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-box-title">Costos por mes</div>
+        <div class="chart-wrap"><canvas id="c-bar"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANÁLISIS -->
+  <div class="panel" id="panel-analisis">
+    <div class="month-bar">
+      <select id="a-year" onchange="renderAnalisis()">
+        <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
+      </select>
+      <div class="view-toggle">
+        <button id="a-view-m" class="active" onclick="setAView('mensual')">Por mes</button>
+        <button id="a-view-a" onclick="setAView('acumulado')">Acumulado</button>
+      </div>
+    </div>
+    <div id="a-status"></div>
+    <div class="pe-grid" id="a-cards"></div>
+    <div class="charts-row">
+      <div class="chart-box">
+        <div class="chart-box-title">Composición financiera</div>
+        <div class="chart-wrap"><canvas id="a-pie"></canvas></div>
+        <div class="pie-legend" id="a-pie-legend"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-box-title">Ventas · costos · utilidad</div>
+        <div class="chart-wrap"><canvas id="a-line"></canvas></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div class="sec-title" style="margin:0;">Detalle mensual</div>
+      <button class="btn-export" onclick="exportarExcel()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 5h6M5 8h6M5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Descargar Excel
+      </button>
+    </div>
+    <div id="a-table"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MESES_L=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const PIE_C=['#E8176A','#1A0A12','#F2648A','#9A7585','#F9E0EC','#c0125a','#6b3050','#f8a4c4','#3d1a2a','#ff6b9d','#b5003e','#ffd0e8'];
+let DB=(()=>{try{return JSON.parse(localStorage.getItem('fitin_db')||'null')||{ventas:{},costos:{}};}catch(e){return{ventas:{},costos:{}};}})();
+let vView='mensual',cView='mensual',aView='mensual';
+let CH={};
+function saveDB(){localStorage.setItem("fitin_db",JSON.stringify(DB));}
+
+function key(y,m){return y+'-'+String(m).padStart(2,'0');}
+function getVM(){return parseInt(document.getElementById('v-month').value);}
+function getVY(){return parseInt(document.getElementById('v-year').value);}
+function getCM(){return parseInt(document.getElementById('c-month').value);}
+function getCY(){return parseInt(document.getElementById('c-year').value);}
+function getAY(){return parseInt(document.getElementById('a-year').value);}
+function fmt(n){return '$'+Number(n).toLocaleString('es-EC',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function dc(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
+
+function switchTab(t){
+  ['ventas','compras','analisis'].forEach((n,i)=>{
+    document.querySelectorAll('.tab')[i].classList.toggle('active',n===t);
+    document.getElementById('panel-'+n).classList.toggle('active',n===t);
+  });
+  if(t==='ventas')renderVentas();
+  if(t==='compras')renderCompras();
+  if(t==='analisis')renderAnalisis();
+}
+function setVView(v){vView=v;document.getElementById('v-view-m').classList.toggle('active',v==='mensual');document.getElementById('v-view-a').classList.toggle('active',v==='acumulado');renderVentas();}
+function setCView(v){cView=v;document.getElementById('c-view-m').classList.toggle('active',v==='mensual');document.getElementById('c-view-a').classList.toggle('active',v==='acumulado');renderCompras();}
+function setAView(v){aView=v;document.getElementById('a-view-m').classList.toggle('active',v==='mensual');document.getElementById('a-view-a').classList.toggle('active',v==='acumulado');renderAnalisis();}
+
+function addVenta(){
+  const desc=document.getElementById('v-desc').value.trim();
+  const qty=parseFloat(document.getElementById('v-qty').value)||1;
+  const price=parseFloat(document.getElementById('v-price').value);
+  if(!desc||!price||price<=0)return;
+  const k=key(getVY(),getVM());
+  if(!DB.ventas[k])DB.ventas[k]=[];
+  DB.ventas[k].push({desc,qty,price,total:qty*price,id:Date.now()});
+  ['v-desc','v-qty','v-price'].forEach(id=>document.getElementById(id).value='');
+  saveDB();renderVentas();
+}
+function delVenta(k,id){DB.ventas[k]=(DB.ventas[k]||[]).filter(v=>v.id!==id);saveDB();renderVentas();}
+function addCosto(tipo){
+  const dI=tipo==='variable'?'cv-desc':'cf-desc';
+  const vI=tipo==='variable'?'cv-val':'cf-val';
+  const desc=document.getElementById(dI).value.trim();
+  const val=parseFloat(document.getElementById(vI).value);
+  if(!desc||!val||val<=0)return;
+  const k=key(getCY(),getCM());
+  if(!DB.costos[k])DB.costos[k]={variable:[],fijo:[]};
+  DB.costos[k][tipo].push({desc,val,id:Date.now()});
+  document.getElementById(dI).value='';document.getElementById(vI).value='';
+  saveDB();renderCompras();
+}
+function delCosto(k,tipo,id){if(!DB.costos[k])return;DB.costos[k][tipo]=DB.costos[k][tipo].filter(c=>c.id!==id);saveDB();renderCompras();}
+
+function getVT(y,m){return(DB.ventas[key(y,m)]||[]).reduce((s,v)=>s+v.total,0);}
+function getCV(y,m){return(DB.costos[key(y,m)]?.variable||[]).reduce((s,c)=>s+c.val,0);}
+function getCF(y,m){return(DB.costos[key(y,m)]?.fijo||[]).reduce((s,c)=>s+c.val,0);}
+
+function makePie(cId,lId,labels,data,colors){
+  dc(cId);
+  const tot=data.reduce((a,b)=>a+b,0);
+  document.getElementById(lId).innerHTML='';
+  if(tot<=0)return;
+  CH[cId]=new Chart(document.getElementById(cId),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors.slice(0,data.length),borderWidth:3,borderColor:'#F7F2F5'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+fmt(ctx.raw)+' ('+((ctx.raw/tot)*100).toFixed(1)+'%)'}}}}
+  });
+  document.getElementById(lId).innerHTML=labels.map((l,i)=>`<span><i style="background:${colors[i]}"></i>${l}: ${((data[i]/tot)*100).toFixed(1)}%</span>`).join('');
+}
+
+function renderVentas(){
+  const m=getVM(),y=getVY(),isA=vView==='acumulado';
+  let tV=0;
+  for(let i=1;i<=12;i++) if(isA)tV+=getVT(y,i); else if(i===m)tV=getVT(y,m);
+  const allR=isA?Object.entries(DB.ventas).filter(([k])=>k.startsWith(y+'-')).flatMap(([,v])=>v):(DB.ventas[key(y,m)]||[]);
+  const cV=isA?Array.from({length:12},(_,i)=>getCV(y,i+1)).reduce((a,b)=>a+b,0):getCV(y,m);
+  const mg=tV-cV,pct=tV>0?(mg/tV*100).toFixed(1):'0.0';
+  document.getElementById('v-metrics').innerHTML=`
+    <div class="mc"><div class="lbl">${isA?'Total ventas '+y:MESES_L[m-1]+' '+y}</div><div class="val">${fmt(tV)}</div><div class="sub">${allR.length} registros</div></div>
+    <div class="mc"><div class="lbl">Costo variable</div><div class="val">${fmt(cV)}</div><div class="sub">Insumos directos</div></div>
+    <div class="mc"><div class="lbl">Margen bruto</div><div class="val">${fmt(mg)}</div><div class="sub">${pct}% del ingreso</div></div>`;
+  const pm={};allR.forEach(r=>{pm[r.desc]=(pm[r.desc]||0)+r.total;});
+  makePie('v-pie','v-pie-legend',Object.keys(pm),Object.values(pm),PIE_C);
+  dc('v-bar');
+  CH['v-bar']=new Chart(document.getElementById('v-bar'),{type:'bar',data:{labels:MESES,datasets:[{label:'Ventas',data:MESES.map((_,i)=>getVT(y,i+1)),backgroundColor:'#E8176A',borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+Number(v).toLocaleString('es-EC')},grid:{color:'rgba(232,23,106,0.08)'}},x:{ticks:{autoSkip:false},grid:{display:false}}}}});
+  const k=key(y,m);
+  const rows=isA?Object.entries(DB.ventas).filter(([kk])=>kk.startsWith(y+'-')).flatMap(([kk,vv])=>vv.map(v=>({...v,mes:MESES[parseInt(kk.split('-')[1])-1]}))):(DB.ventas[k]||[]).map(v=>({...v,mes:null}));
+  if(!rows.length){document.getElementById('v-table').innerHTML='<div class="empty">No hay ventas registradas aún.</div>';return;}
+  const tot=rows.reduce((s,r)=>s+r.total,0);
+  document.getElementById('v-table').innerHTML=`<table><thead><tr><th>Descripción</th>${isA?'<th>Mes</th>':''}<th>Cant.</th><th>Precio unit.</th><th>Total</th><th></th></tr></thead><tbody>
+    ${rows.map(r=>`<tr><td>${r.desc}</td>${isA?`<td>${r.mes}</td>`:''}<td>${r.qty}</td><td>${fmt(r.price)}</td><td><strong>${fmt(r.total)}</strong></td><td>${!isA?`<button class="btn-del" onclick="delVenta('${k}',${r.id})">×</button>`:''}</td></tr>`).join('')}
+    <tr class="total-row"><td colspan="${isA?4:3}">Total</td><td>${fmt(tot)}</td><td></td></tr></tbody></table>`;
+}
+
+function renderCompras(){
+  const m=getCM(),y=getCY(),isA=cView==='acumulado';
+  let tF=0,tV=0;
+  if(isA){for(let i=1;i<=12;i++){tF+=getCF(y,i);tV+=getCV(y,i);}}
+  else{tF=getCF(y,m);tV=getCV(y,m);}
+  const tot=tF+tV;
+  document.getElementById('c-metrics').innerHTML=`
+    <div class="mc"><div class="lbl">Costos variables</div><div class="val">${fmt(tV)}</div><div class="sub">Insumos directos</div></div>
+    <div class="mc"><div class="lbl">Costos fijos</div><div class="val">${fmt(tF)}</div><div class="sub">Gastos permanentes</div></div>
+    <div class="mc"><div class="lbl">Total egresos</div><div class="val">${fmt(tot)}</div><div class="sub">${isA?'Acumulado '+y:MESES_L[m-1]+' '+y}</div></div>`;
+  makePie('c-pie','c-pie-legend',['Costos fijos','Costos variables'],[tF,tV],['#1A0A12','#E8176A']);
+  dc('c-bar');
+  CH['c-bar']=new Chart(document.getElementById('c-bar'),{type:'bar',data:{labels:MESES,datasets:[{label:'Fijos',data:MESES.map((_,i)=>getCF(y,i+1)),backgroundColor:'#1A0A12',borderRadius:5,borderSkipped:false},{label:'Variables',data:MESES.map((_,i)=>getCV(y,i+1)),backgroundColor:'#E8176A',borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{autoSkip:false},grid:{display:false}},y:{stacked:true,ticks:{callback:v=>'$'+Number(v).toLocaleString('es-EC')},grid:{color:'rgba(232,23,106,0.08)'}}}}});
+  const k=key(y,m);
+  const cv=isA?Object.entries(DB.costos).filter(([kk])=>kk.startsWith(y+'-')).flatMap(([kk,dd])=>dd.variable.map(c=>({...c,mes:MESES[parseInt(kk.split('-')[1])-1]}))):(DB.costos[k]?.variable||[]);
+  const cf=isA?Object.entries(DB.costos).filter(([kk])=>kk.startsWith(y+'-')).flatMap(([kk,dd])=>dd.fijo.map(c=>({...c,mes:MESES[parseInt(kk.split('-')[1])-1]}))):(DB.costos[k]?.fijo||[]);
+  const mkT=(rows,tipo)=>{
+    if(!rows.length)return'<div class="empty" style="padding:14px;">Sin registros</div>';
+    const t=rows.reduce((s,r)=>s+r.val,0);
+    return`<table><thead><tr><th>Descripción</th>${isA?'<th>Mes</th>':''}<th>Monto</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.desc}</td>${isA?`<td>${r.mes}</td>`:''}<td><strong>${fmt(r.val)}</strong></td><td>${!isA?`<button class="btn-del" onclick="delCosto('${k}','${tipo}',${r.id})">×</button>`:''}</td></tr>`).join('')}<tr class="total-row"><td colspan="${isA?2:1}">Total</td><td>${fmt(t)}</td><td></td></tr></tbody></table>`;
+  };
+  document.getElementById('cv-table').innerHTML=mkT(cv,'variable');
+  document.getElementById('cf-table').innerHTML=mkT(cf,'fijo');
+}
+
+function renderAnalisis(){
+  const y=getAY(),isA=aView==='acumulado';
+  const vS=MESES.map((_,i)=>getVT(y,i+1));
+  const cVS=MESES.map((_,i)=>getCV(y,i+1));
+  const cFS=MESES.map((_,i)=>getCF(y,i+1));
+  const tS=MESES.map((_,i)=>cVS[i]+cFS[i]);
+  const uS=MESES.map((_,i)=>vS[i]-tS[i]);
+  const ac=a=>a.reduce((r,v,i)=>{r.push((r[i-1]||0)+v);return r;},[]);
+  const vA=ac(vS),tA=ac(tS),uA=ac(uS),fA=ac(cFS),varA=ac(cVS);
+  const tV=isA?vA[11]:vS.reduce((a,b)=>a+b,0);
+  const tF=isA?fA[11]:cFS.reduce((a,b)=>a+b,0);
+  const tVar=isA?varA[11]:cVS.reduce((a,b)=>a+b,0);
+  const tC=tF+tVar,util=tV-tC;
+  const mc=tV>0?(tV-tVar)/tV:0;
+  const pe=mc>0?tF/mc:0;
+  document.getElementById('a-status').innerHTML=`<div class="status-box ${util>=0?'profit':'loss'}"><strong style="font-size:15px;font-family:'Montserrat',sans-serif;">${util>=0?'Resultado positivo: '+fmt(util)+' de utilidad neta':'Resultado negativo: '+fmt(Math.abs(util))+' de pérdida'}</strong><div style="font-size:12px;margin-top:4px;opacity:0.8;">${isA?'Acumulado '+y:'Año '+y}</div></div>`;
+  document.getElementById('a-cards').innerHTML=`
+    <div class="pe-card"><h3>Punto de equilibrio</h3><div class="big" style="color:#E8176A;">${fmt(pe)}</div><div class="note">Ventas mínimas para no perder</div></div>
+    <div class="pe-card"><h3>Margen de contribución</h3><div class="big" style="color:#2d7a3a;">${fmt(tV-tVar)}</div><div class="note">${(mc*100).toFixed(1)}% del ingreso cubre fijos</div></div>
+    <div class="pe-card"><h3>Costos fijos</h3><div class="big">${fmt(tF)}</div><div class="note">Base mínima de gastos</div></div>
+    <div class="pe-card"><h3>Vs punto de equilibrio</h3><div class="big" style="color:${tV>=pe?'#2d7a3a':'#E8176A'}">${tV>=pe?'+'+fmt(tV-pe):'-'+fmt(pe-tV)}</div><div class="note">${tV>=pe?'Por encima':'Por debajo'} del P.E.</div></div>`;
+  makePie('a-pie','a-pie-legend',['Costos fijos','Costos variables','Utilidad neta'],[tF,tVar,Math.max(util,0)],['#1A0A12','#E8176A','#2d7a3a']);
+  dc('a-line');
+  const dV=isA?vA:vS,dT=isA?tA:tS,dU=isA?uA:uS;
+  CH['a-line']=new Chart(document.getElementById('a-line'),{type:'line',data:{labels:MESES,datasets:[{label:'Ventas',data:dV,borderColor:'#E8176A',backgroundColor:'rgba(232,23,106,0.07)',fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#E8176A'},{label:'Costos',data:dT,borderColor:'#1A0A12',backgroundColor:'rgba(26,10,18,0.04)',fill:true,tension:0.3,pointRadius:4,borderDash:[6,3]},{label:'Utilidad',data:dU,borderColor:'#2d7a3a',tension:0.3,pointRadius:3,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+Number(v).toLocaleString('es-EC')},grid:{color:'rgba(232,23,106,0.07)'}},x:{ticks:{autoSkip:false},grid:{display:false}}}}});
+  const rows=MESES.map((mes,i)=>({mes:MESES_L[i],v:vS[i],cv:cVS[i],cf:cFS[i],t:tS[i],u:uS[i]})).filter(r=>r.v>0||r.t>0);
+  const tV2=vS.reduce((a,b)=>a+b,0),tCV=cVS.reduce((a,b)=>a+b,0),tCF=cFS.reduce((a,b)=>a+b,0),tT=tS.reduce((a,b)=>a+b,0),tU=uS.reduce((a,b)=>a+b,0);
+  if(!rows.length){document.getElementById('a-table').innerHTML='<div class="empty">Registra ventas y compras para ver el análisis.</div>';return;}
+  document.getElementById('a-table').innerHTML=`<table><thead><tr><th>Mes</th><th>Ventas</th><th>C. Variable</th><th>C. Fijo</th><th>Total costos</th><th>Utilidad</th></tr></thead><tbody>
+    ${rows.map(r=>`<tr><td>${r.mes}</td><td>${fmt(r.v)}</td><td>${fmt(r.cv)}</td><td>${fmt(r.cf)}</td><td>${fmt(r.t)}</td><td><span class="badge ${r.u>=0?'badge-green':'badge-red'}">${fmt(r.u)}</span></td></tr>`).join('')}
+    <tr class="total-row"><td>Total</td><td>${fmt(tV2)}</td><td>${fmt(tCV)}</td><td>${fmt(tCF)}</td><td>${fmt(tT)}</td><td><span class="badge ${tU>=0?'badge-green':'badge-red'}">${fmt(tU)}</span></td></tr></tbody></table>`;
+}
+
+function exportarExcel(){
+  const y=getAY();
+  const wb=XLSX.utils.book_new();
+  const vR=[['Mes','Descripción','Cantidad','Precio Unit.','Total']];
+  for(let m=1;m<=12;m++)(DB.ventas[key(y,m)]||[]).forEach(r=>vR.push([MESES_L[m-1],r.desc,r.qty,r.price,r.total]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(vR),'Ventas');
+  const cR=[['Mes','Tipo','Descripción','Monto']];
+  for(let m=1;m<=12;m++){const k=key(y,m);(DB.costos[k]?.variable||[]).forEach(r=>cR.push([MESES_L[m-1],'Variable',r.desc,r.val]));(DB.costos[k]?.fijo||[]).forEach(r=>cR.push([MESES_L[m-1],'Fijo',r.desc,r.val]));}
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(cR),'Compras');
+  const vS=MESES.map((_,i)=>getVT(y,i+1)),cVS=MESES.map((_,i)=>getCV(y,i+1)),cFS=MESES.map((_,i)=>getCF(y,i+1));
+  const tS=MESES.map((_,i)=>cVS[i]+cFS[i]),uS=MESES.map((_,i)=>vS[i]-tS[i]);
+  const tV=vS.reduce((a,b)=>a+b,0),tVar=cVS.reduce((a,b)=>a+b,0),tF=cFS.reduce((a,b)=>a+b,0);
+  const mc=tV>0?(tV-tVar)/tV:0,pe=mc>0?tF/mc:0;
+  const aR=[['FIT-IN by Arianna Vallarino — Análisis Financiero '+y],[''],['RESUMEN'],['Punto de Equilibrio','',pe.toFixed(2)],['Ventas totales','',tV.toFixed(2)],['Costos fijos','',tF.toFixed(2)],['Costos variables','',tVar.toFixed(2)],['Utilidad neta','',(tV-tF-tVar).toFixed(2)],[''],['DETALLE MENSUAL'],['Mes','Ventas','C. Variable','C. Fijo','Total Costos','Utilidad'],...MESES_L.map((mes,i)=>[mes,vS[i],cVS[i],cFS[i],tS[i],uS[i]]),['TOTAL',tV,tVar,tF,tF+tVar,tV-tF-tVar]];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(aR),'Análisis');
+  XLSX.writeFile(wb,'FitIn_Reporte_'+y+'.xlsx');
+}
+
+const now=new Date();
+document.getElementById('v-month').value=now.getMonth()+1;
+document.getElementById('c-month').value=now.getMonth()+1;
+renderVentas();renderCompras();
+</script>
+</body>
+</html>
